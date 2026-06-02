@@ -44,30 +44,19 @@ with open(md_file_path, "r", encoding="utf-8") as file:
     md_text = file.read()
 
 # 5. Convert the markdown string to HTML
-html_content = markdown.markdown(md_text)
+html_content = markdown.markdown(md_text, extensions=['fenced_code', 'tables'])
 
-# 6. Define the HTML template
-html_output = f"""<!DOCTYPE html>
-<html>
-  <head>
-    <title>{entry_title}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../index.css">
-  </head>
-  <body>
-      <ul class="navbar">
-        <div class="home">
-          <li class="navbar-item"><a href="../../index.html">Home</a></li>
-        </div>
-        <div class="links">
-          <li class="navbar-item"><a href="javascript:history.back()">Back to Hub</a></li>
-        </div>
-      </ul>
-    <div class="content-block">
-      {html_content}
-    </div>
-  </body>
-</html>"""
+# 6. Load the HTML templates
+with open("templates/navbar.html", "r", encoding="utf-8") as f:
+    navbar_tmpl = f.read()
+with open("templates/review.html", "r", encoding="utf-8") as f:
+    review_tmpl = f.read()
+
+nav_html = navbar_tmpl.replace("{{ base_path }}", "../../")
+html_output = review_tmpl.replace("{{ title }}", entry_title)
+html_output = html_output.replace("{{ base_path }}", "../../")
+html_output = html_output.replace("{{ navbar }}", nav_html)
+html_output = html_output.replace("{{ content }}", html_content)
 
 # 7. Ensure output directory exists before writing HTML
 output_dir = os.path.dirname(output_filename)
