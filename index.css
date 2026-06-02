@@ -30,7 +30,7 @@ body {
 
 .navbar .links {
   display: flex;
-  justify-content: right;
+  flex-wrap: wrap;
 }
 
 .navbar a {
@@ -61,9 +61,9 @@ body {
 }
 
 .content-block img {
-  width: 100%;
-  max-width: 40rem;
-  height: auto;
+  height: 100%;
+  max-height: 20rem;
+  width: auto;
   display: block;
   margin: 0 auto;
   border: 2px solid #ffffff;
@@ -87,13 +87,14 @@ body {
   display: flex;
   gap: 0.5rem;
   justify-content: space-between;
-  padding: 0.25rem;
-  border-bottom: #ffffff 1px solid;
 }
 
 .blog-entry a {
   color: #ffffff;
-  text-decoration: none;
+}
+
+.blog-entry a:hover {
+  color: aqua;
 }
 
 .blog-entry p {

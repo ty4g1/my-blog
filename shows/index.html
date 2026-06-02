@@ -22,7 +22,37 @@
       <h1>Show Reviews</h1>
       <p>Here are my collected thoughts on shows I've watched recently. Will probably update the reviews as I watch more episodes, or split into multiple reviews. This will likely include a mix of TV shows, web series, and Animes.</p>
     </div>
-    <div class="content-block">
+    <div class="content-block blog-entries">
     </div>
+    <script>
+        const contentBlock = document.querySelector('.content-block.blog-entries');
+
+        async function loadBlogEntries() {
+            try {
+                const response = await fetch('metadata.json');
+                const entries = await response.json();
+
+                contentBlock.innerHTML = '';
+
+                entries.forEach(entry => {
+                    const entryHTML = `
+                        <div>
+                          <div class="blog-entry">
+                              <a href="${entry.url}">${entry.Title}</a>
+                              <p>Last update: ${entry["Last update"]}</p>
+                          </div>
+                          <p>${entry.Summary}</p>
+                          <hr>
+                        </div>
+                    `;
+                    contentBlock.insertAdjacentHTML('beforeend', entryHTML);
+                });
+            } catch (error) {
+                console.error("Error loading the blog entries:", error);
+            }
+        }
+
+        loadBlogEntries();
+    </script>
   </body>
 </html>

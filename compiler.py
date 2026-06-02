@@ -1,6 +1,7 @@
 import sys
 import os
 import markdown
+import json
 from datetime import datetime
 
 # Helper function to get the date with ordinal suffixes (1st, 2nd, 3rd, etc.)
@@ -14,32 +15,38 @@ def get_ordinal_date():
     
     return f"{day}{suffix} {today.strftime('%B %Y')}"
 
-# 1. Ensure all three arguments are provided
-if len(sys.argv) < 4:
-    print('Usage: python script.py <path_to_markdown.md> <output_filename.html> "Entry Title"')
-    sys.exit(1)
+# 1. Gather inputs interactively
+print("--- Blog Post Generator ---")
+md_filename = input("Name of markdown file (e.g., filename.md): ").strip()
+category = input("Blog category (games, books, shows, movies, thoughts): ").strip().lower()
+entry_title = input("Blog title: ").strip()
+cover_image = input("Blog cover image (path or URL): ").strip()
+summary = input("One line summary: ").strip()
 
-md_file_path = sys.argv[1]
-output_filename = sys.argv[2]
-entry_title = sys.argv[3]
+# Ensure the markdown file has the correct extension
+if not md_filename.endswith(".md"):
+    md_filename += ".md"
 
-# Ensure the output filename ends with .html
-if not output_filename.endswith(".html"):
-    output_filename += ".html"
+# 2. Set up paths
+md_file_path = os.path.join("markdown", md_filename)
+base_filename = os.path.splitext(md_filename)[0]
+output_filename = os.path.join(category, "reviews", f"{base_filename}.html")
+json_path = os.path.join(category, "metadata.json")
 
-# 2. Check if the provided markdown file actually exists
+# 3. Check if the provided markdown file actually exists
 if not os.path.isfile(md_file_path):
-    print(f"Error: The file '{md_file_path}' does not exist.")
+    print(f"\nError: The file '{md_file_path}' does not exist.")
+    print("Make sure it is inside the 'markdown' folder in this directory.")
     sys.exit(1)
 
-# 3. Read the markdown content from the file
+# 4. Read the markdown content from the file
 with open(md_file_path, "r", encoding="utf-8") as file:
     md_text = file.read()
 
-# 4. Convert the markdown string to HTML
+# 5. Convert the markdown string to HTML
 html_content = markdown.markdown(md_text)
 
-# 5. Define the HTML template
+# 6. Define the HTML template
 html_output = f"""<!DOCTYPE html>
 <html>
   <head>
@@ -66,40 +73,43 @@ html_output = f"""<!DOCTYPE html>
   </body>
 </html>"""
 
-# Ensure the output directory actually exists before writing
+# 7. Ensure output directory exists before writing HTML
 output_dir = os.path.dirname(output_filename)
-if output_dir and not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+os.makedirs(output_dir, exist_ok=True)
 
-# 6. Write the final formatted string to the dynamically named output file
+# Write the HTML file
 with open(output_filename, "w", encoding="utf-8") as file:
     file.write(html_output)
 
-# 7. Parse the path to generate the correct href and index instructions
-# Normalize path separators to forward slashes for consistency
-normalized_path = output_filename.replace('\\', '/')
-path_parts = normalized_path.split('/')
+print(f"\n[+] Successfully saved HTML to: {output_filename}")
 
-if len(path_parts) > 1:
-    first_dir = path_parts[0]
-    href_path = '/'.join(path_parts[1:])
-    target_index = f"{first_dir}/index.html"
-else:
-    href_path = normalized_path
-    target_index = "index.html"
-
-# 8. Generate and print the HTML index snippet
+# 8. Handle the JSON metadata
 current_date_str = get_ordinal_date()
 
-snippet = f"""
-<div class="blog-entry">
-    <a href="{href_path}">{entry_title}</a>
-    <p>Last update: {current_date_str}</p>
-</div>
-"""
+# Define the new entry
+new_metadata = {
+    "Title": entry_title,
+    "Last update": current_date_str,
+    "Summary": summary,
+    "cover_url": cover_image,
+    "url": f"reviews/{base_filename}.html" # Added so you can easily link to the generated page
+}
 
-print(f"Successfully saved to {output_filename}!\n")
-print(f"Copy and paste this entry into {target_index}:")
-print("------------------------------------------------")
-print(snippet.strip())
-print("------------------------------------------------")
+# Load existing JSON data if the file exists
+metadata_list = []
+if os.path.exists(json_path):
+    try:
+        with open(json_path, "r", encoding="utf-8") as json_file:
+            metadata_list = json.load(json_file)
+    except json.JSONDecodeError:
+        print(f"[-] Warning: {json_path} was empty or corrupted. Starting fresh.")
+
+# Append the new entry
+metadata_list.append(new_metadata)
+
+# Write the updated list back to the JSON file
+with open(json_path, "w", encoding="utf-8") as json_file:
+    json.dump(metadata_list, json_file, indent=4)
+
+print(f"[+] Successfully appended metadata to: {json_path}")
+print("Done!")

@@ -22,7 +22,37 @@
       <h1>Random Thoughts</h1>
       <p>Here is simply a bunch of random posts into the void, maybe I felt like writing my thoughts on something that happened, or something I thought of. This could be an idea bank, or just a collection of garbage.</p>
     </div>
-    <div class="content-block">
+    <div class="content-block blog-entries">
     </div>
+    <script>
+        const contentBlock = document.querySelector('.content-block.blog-entries');
+
+        async function loadBlogEntries() {
+            try {
+                const response = await fetch('metadata.json');
+                const entries = await response.json();
+
+                contentBlock.innerHTML = '';
+
+                entries.forEach(entry => {
+                    const entryHTML = `
+                        <div>
+                          <div class="blog-entry">
+                              <a href="${entry.url}">${entry.Title}</a>
+                              <p>Last update: ${entry["Last update"]}</p>
+                          </div>
+                          <p>${entry.Summary}</p>
+                          <hr>
+                        </div>
+                    `;
+                    contentBlock.insertAdjacentHTML('beforeend', entryHTML);
+                });
+            } catch (error) {
+                console.error("Error loading the blog entries:", error);
+            }
+        }
+
+        loadBlogEntries();
+    </script>
   </body>
 </html>
