@@ -90,10 +90,10 @@ def build_site():
     # 2. Build static pages (Home)
     print("Building static pages (Home)")
     
-    # Home is in home/ (1 level deep)
-    home_nav = navbar_tmpl.replace("{{ base_path }}", "../")
+    # Home is in root
+    home_nav = navbar_tmpl.replace("{{ base_path }}", "")
     home_out = home_tmpl.replace("{{ navbar }}", home_nav)
-    with open(os.path.join("home", "home.html"), "w", encoding="utf-8") as f:
+    with open("index.html", "w", encoding="utf-8") as f:
         f.write(home_out)
 
     print("--- Build Complete ---")
