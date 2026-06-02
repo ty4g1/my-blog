@@ -18,7 +18,7 @@ def get_ordinal_date():
 # 1. Gather inputs interactively
 print("--- Blog Post Generator ---")
 md_filename = input("Name of markdown file (e.g., filename.md): ").strip()
-category = input("Blog category (games, books, shows, movies, thoughts): ").strip().lower()
+category = input("Blog category tag (e.g. games, books, tech): ").strip().lower()
 entry_title = input("Blog title: ").strip()
 cover_image = input("Blog cover image (path or URL): ").strip()
 summary = input("One line summary: ").strip()
@@ -30,8 +30,8 @@ if not md_filename.endswith(".md"):
 # 2. Set up paths
 md_file_path = os.path.join("markdown", md_filename)
 base_filename = os.path.splitext(md_filename)[0]
-output_filename = os.path.join(category, "reviews", f"{base_filename}.html")
-json_path = os.path.join(category, "metadata.json")
+output_filename = os.path.join("blog", "posts", f"{base_filename}.html")
+json_path = os.path.join("blog", "metadata.json")
 
 # 3. Check if the provided markdown file actually exists
 if not os.path.isfile(md_file_path):
@@ -74,10 +74,11 @@ current_date_str = get_ordinal_date()
 # Define the new entry
 new_metadata = {
     "Title": entry_title,
+    "category": category,
     "Last update": current_date_str,
     "Summary": summary,
     "cover_url": cover_image,
-    "url": f"reviews/{base_filename}.html" # Added so you can easily link to the generated page
+    "url": f"posts/{base_filename}.html" # Added so you can easily link to the generated page
 }
 
 # Load existing JSON data if the file exists
