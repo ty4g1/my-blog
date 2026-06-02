@@ -57,14 +57,10 @@ html_output = f"""<!DOCTYPE html>
   <body>
       <ul class="navbar">
         <div class="home">
-          <li class="navbar-item"><a href="../index.html">Home</a></li>
+          <li class="navbar-item"><a href="../../index.html">Home</a></li>
         </div>
         <div class="links">
-          <li class="navbar-item"><a href="../../games/index.html">Game Reviews</a></li>
-          <li class="navbar-item"><a href="../../books/index.html">Book Reviews</a></li>
-          <li class="navbar-item"><a href="../../shows/index.html">Show Reviews</a></li>
-          <li class="navbar-item"><a href="../../movies/index.html">Movie Reviews</a></li>
-          <li class="navbar-item"><a href="../../thoughts/index.html">Random Thoughts</a></li>
+          <li class="navbar-item"><a href="javascript:history.back()">Back to Hub</a></li>
         </div>
       </ul>
     <div class="content-block">
